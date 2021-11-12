@@ -67,7 +67,7 @@ class ResolverQueueThread(Thread):
 parser = ArgumentParser(prog='get-free-domains')
 parser.add_argument('--length', type=int, required=True)
 parser.add_argument('--tld', type=str, required=True)
-parser.add_argument('--nameserver', type=str, nargs='*')
+parser.add_argument('--nameserver', type=str, nargs='*', default='1.1.1.1 8.8.8.8 8.8.4.4')
 parser.add_argument('--file', type=str)
 parser.add_argument('--prefix', type=str, default='')
 parser.add_argument('--threads', type=int, default=1)
