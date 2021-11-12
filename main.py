@@ -15,6 +15,9 @@ from dns.resolver import NoAnswer, \
 from dns.exception import Timeout
 
 class FileQueueThread(Thread):
+    """
+    Writing results to output file
+    """
     def __init__(self, file_queue):
         super().__init__()
         self.file_queue = file_queue
@@ -24,10 +27,14 @@ class FileQueueThread(Thread):
             domain = self.file_queue.get()
             with open(config.file, 'a') as file_handle_free_domains:
                 file_handle_free_domains.write(f'{domain}\n')
+            # mark the job as done
             self.file_queue.task_done()
 
 
 class ResolverQueueThread(Thread):
+    """
+    Doing the resolve work
+    """
     def __init__(self, resolver_queue, file_queue):
         super().__init__()
         self.resolver_queue = resolver_queue
@@ -42,31 +49,26 @@ class ResolverQueueThread(Thread):
                         answer = resolver.resolve(domain, 'A')
                     except NXDOMAIN:
                         free_domains_a.append(domain)
-                    # try:
-                    #    answer = resolver.resolve(domain, 'AAAA')
-                    # except NXDOMAIN:
-                    #    free_domains_aaaa.append(domain)
-                    # if domain in free_domains_a and \
-                    #        domain in free_domains_aaaa:
                     if domain in free_domains_a:
                         free_domains.append(domain)
                         if use_free_domain_file:
-                            # with open(config.file, 'a') as file_handle_free_domains:
-                            #    file_handle_free_domains.write(f'{domain}\n')
                             self.file_queue.put(domain)
+                        else:
+                            print(domain)
             except NoAnswer:
                 print('NoAnswer', domain)
             except NoNameservers:
                 print('NoNameservers', domain)
             except Timeout:
                 print('Timeout', domain)
+            # mark the job as done
             self.resolver_queue.task_done()
 
 parser = ArgumentParser(prog='get-free-domains')
 parser.add_argument('--length', type=int, required=True)
 parser.add_argument('--tld', type=str, required=True)
 parser.add_argument('--nameserver', type=str, nargs='*')
-parser.add_argument('--file', type=str, required=True)
+parser.add_argument('--file', type=str)
 parser.add_argument('--prefix', type=str, default='')
 parser.add_argument('--threads', type=int, default=1)
 
@@ -93,6 +95,7 @@ for thread in range(config.threads):
 # for now only check for A-Records
 free_domains = []
 free_domains_a = []
+
 
 use_free_domain_file = False
 if config.file:
