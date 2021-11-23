@@ -29,7 +29,7 @@ Arguments with '*' are required, the others optional.
 main.py --length 3 --tld foo --threads 50 --file foo.txt
 ```
 
-produces the file _foo.txt_ which contains all most probably free TLD .foo domains with a length of 3 characters.
+produces the file _foo.txt_ which contains all most probably free TLD .foo domains with a length of 3 characters with 50 threads.
 
 All combinations from aaa.foo to zzz.foo will be sent to the nameservers.
 
