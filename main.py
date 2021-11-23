@@ -79,7 +79,7 @@ if len(config.prefix) > config.length-1:
 
 resolver = Resolver()
 if config.nameserver:
-    resolver.nameservers = config.nameserver
+    resolver.nameservers = config.nameserver.split(' ')
 
 file_queue = Queue()
 file_queue_thread = FileQueueThread(file_queue)
